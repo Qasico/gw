@@ -1,0 +1,27 @@
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
+*.so
+
+# Folders
+_obj
+_test
+gw
+_testmain.go
+
+*.exe
+*.test
+*.prof
+
+#Custom
+.DS_Store
+bee
+*.exe~
+
+*.iml
+.idea/
+*.ipr
+*.iws
+out/
+.idea_modules/
+atlassian-ide-plugin.xml
