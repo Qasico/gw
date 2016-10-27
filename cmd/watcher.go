@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"os"
-	"fmt"
 	"time"
 	"sync"
 	"strconv"
@@ -104,20 +103,38 @@ func Build() {
 	path, _ := os.Getwd()
 	os.Chdir(path)
 
+	// run go lint, testing and vet
+	runTest()
+
 	// using script from go-fast-build
 	// github.com/kovetskiy/go-fast
-	cmd := exec.Command("/bin/sh", "-c", "export GOBIN=$(pwd); exec go install -gcflags \"-trimpath $GOPATH/src\" \"$@\";")
+	cmd := exec.Command("/bin/sh", "-c", "exec go vet; exec go lint; export GOBIN=$(pwd); exec go install -gcflags \"-trimpath $GOPATH/src\" \"$@\";")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
 	err = cmd.Run()
 	if err != nil {
-		fmt.Println(err)
 		print.Err("Failed to build: %s\n", err.Error())
 		return
 	}
 
 	restart(appName)
+}
+
+func runTest() {
+	print.Info("running vet, lint and test ...\n")
+	print.Print("\n")
+
+	cmd := exec.Command("/bin/sh", "-c", "go test -cover;")
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	if err := cmd.Run(); err != nil {
+		print.Err("Failed to run test: %s\n", err.Error())
+	}
+
+	print.Print("\n")
 }
 
 // restart performs restarting application binary.
